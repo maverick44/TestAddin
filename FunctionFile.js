@@ -188,7 +188,7 @@ function soapToGetItemDataCallback(asyncResult) {
         var emailSubject1 = xmlDoc.getElementsByTagName("t:Subject")[0].textContent;
         //app.showNotification(emailSubject1, mimeContentID1);   
 
-        var toAddress1 = "<t:Mailbox><t:EmailAddress>md.usman@gmail.com</t:EmailAddress></t:Mailbox>"
+        var toAddress1 = "<t:Mailbox><t:EmailAddress>phishing@develsecurity.com</t:EmailAddress></t:Mailbox>"
 
         // The following string is a valid SOAP envelope and request for forwarding
         // a mail item. Note that we use the item_id value (which we obtained in the click event handler)
