@@ -1,4 +1,8 @@
-﻿Office.initialize = function () {
+﻿var mailboxItem
+
+Office.initialize = function () {
+
+   
 }
 
 function OpenNewEMailDialog() {
@@ -23,7 +27,7 @@ function OpenNewEMailDialog() {
 }
 
 function sendEmailNow() {
-
+    
     //Office.context.mailbox.item.notificationMessages.replaceAsync("status1", {
     //    type: "informationalMessage",
     //    icon: "icon16",
@@ -32,10 +36,78 @@ function sendEmailNow() {
     //});
 
     //OpenNewEMailDialog();
+
     sendEmailAttach();
+    
     //OpenNewEMailDialog();
-    event.comp
+   
     //Office.context.mailbox.item.notificationMessages.removeAsync("status");
+}
+
+function deleteSelectedEmail() {
+    var item = Office.context.mailbox.item;
+    var item_id = item.itemId;
+    var mailbox = Office.context.mailbox;
+
+    var reqDelete1 = '<?xml version="1.0" encoding="utf-8"?> ' +
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+        'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+        'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' +
+        'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"> ' +
+        '<soap:Header> ' +
+        '<t:RequestServerVersion Version="Exchange2013" xmlns="http://schemas.microsoft.com/exchange/services/2006/types" soap:mustUnderstand="0" /> ' +
+        '</soap:Header> ' +
+        '<soap:Body> ' +
+        '<MoveItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
+        'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"> ' +
+        '<ToFolderId> ' +
+        '<t:DistinguishedFolderId Id="deleteditems"/> ' +
+        '</ToFolderId> ' +
+        '<ItemIds> ' +
+        '<t:ItemId Id="' + item_id + '"/> ' +
+        '</ItemIds> ' +
+        '</MoveItem> ' +
+        '</soap:Body> ' +
+        '</soap:Envelope> ';
+
+    // The makeEwsRequestAsync method accepts a string of SOAP and a callback function
+    mailbox.makeEwsRequestAsync(reqDelete1, soapDeleteResponse);
+}
+
+function soapDeleteResponse(asyncResult) {
+    var parser;
+    var xmlDoc;
+
+    if (asyncResult.error != null) {
+
+        console.log(asyncResult.error.message+ " 123");
+        //app.showNotification("EWS Status", asyncResult.error.message);        
+    }
+    else {
+        var response = asyncResult.value;
+        if (window.DOMParser) {
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(response, "text/xml");
+        }
+        else // Older Versions of Internet Explorer
+        {
+            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = false;
+            xmlDoc.loadXML(response);
+        }
+
+        // Get the required response, and if it's NoError then all has succeeded, so tell the user.
+        // Otherwise, tell them what the problem was. (E.G. Recipient email addresses might have been
+        // entered incorrectly --- try it and see for yourself what happens!!)
+        var result = xmlDoc.getElementsByTagName("m:ResponseCode")[0].textContent;
+        if (result == "NoError") {
+            //    app.showNotification("EWS Status", "Success!");
+        }
+        else {
+            console.log(result + " 456");
+            //    app.showNotification("EWS Status", "The following error code was recieved: " + result);
+        }
+    }
 }
 
 function sendEmailAttach() {
@@ -110,6 +182,7 @@ function soapToGetItemDataCallback(asyncResult) {
             xmlDoc.loadXML(response);
         }
 
+        var emailSenderName1 = Office.context.mailbox.item.from.displayName;
         var emailSender1 = Office.context.mailbox.item.from.emailAddress;
         var mimeContentID1 = xmlDoc.getElementsByTagName("t:MimeContent")[0].textContent;
         var emailSubject1 = xmlDoc.getElementsByTagName("t:Subject")[0].textContent;
@@ -137,8 +210,8 @@ function soapToGetItemDataCallback(asyncResult) {
             '    <m:CreateItem MessageDisposition="SendAndSaveCopy">' +
             '      <m:Items>' +
             '       <t:Message>' +
-            ' <t:Subject>SPAM Email</t:Subject>' +
-            ' <t:Body BodyType="Text">Email Subject: ' + emailSubject1+'\rEmail Sender: ' + emailSender1 + '</t:Body> ' +
+            ' <t:Subject>Phishing Email from Eyephish Add-in</t:Subject>' +
+            ' <t:Body BodyType="Text">Sender Name: ' + emailSenderName1 +'\rSender Email: ' + emailSender1 + '\rEmail Subject: ' + emailSubject1 + '</t:Body> ' +
             ' <t:ToRecipients>' + toAddress1 + '</t:ToRecipients>' +
 
             ' <t:Attachments>' +
@@ -205,7 +278,8 @@ function soapToForwardItemCallback(asyncResult) {
                 message: "Email has been forwarded as SPAM.",
                 persistent: false
             });
-            //    app.showNotification("EWS Status", "Success!");
+
+            deleteSelectedEmail();
         }
         else {
             Office.context.mailbox.item.notificationMessages.replaceAsync("status1", {
@@ -216,5 +290,7 @@ function soapToForwardItemCallback(asyncResult) {
             });
             //    app.showNotification("EWS Status", "The following error code was recieved: " + result);
         }
+
+       
     }
 }
