@@ -56,7 +56,6 @@
 
         // 2nd API Call
 
-        //var emailContents = `{"Recipient_email": "md.usman@gmail.com","email_subject": "'+ GEmailSubject+ '","sender_email": "md.usman@gmail.com"}`;
         var emailContents = "{\"Recipient_email\": \"" + GEmailSender + "\",\"email_subject\": \"" + GEmailSubject + "\",\"sender_email\": \"" + GEmailSenderName +"\"}";
 
         jQuery.post("https://epapi.develsystems.com/SearchPhishingSender/", emailContents, function (dataEmail, statusEmail) {
@@ -186,7 +185,7 @@
             var mimeContentID1 = xmlDoc.getElementsByTagName("t:MimeContent")[0].textContent;
             var emailSubject1 = xmlDoc.getElementsByTagName("t:Subject")[0].textContent;
             
-            var toAddress1 = "<t:Mailbox><t:EmailAddress>md.usman@gmail.com</t:EmailAddress></t:Mailbox>"
+            var toAddress1 = "<t:Mailbox><t:EmailAddress>phishing@develsecurity.com</t:EmailAddress></t:Mailbox>"
 
             var newTestSendEmail = '<?xml version="1.0" encoding="utf-8"?>' +
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
