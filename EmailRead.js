@@ -69,7 +69,7 @@
             //sendEmailAttachRead();
         }
 
-        Office.context.ui.displayDialogAsync(window.location.origin + "TestAddin/Functions/Dialog.html?" + str1 + str2,
+        Office.context.ui.displayDialogAsync(window.location.origin + "/Dialog.html?" + str1 + str2,
             { height: 20, width: 30, displayInIframe: true }, dialogCallbackRead);
     }
 
