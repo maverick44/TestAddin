@@ -9,8 +9,7 @@ function OpenNewEMailDialog() {
     Office.context.mailbox.displayNewMessageForm(
         {
             //toRecipients: Office.context.mailbox.item.to, // Copies the To line from current item
-            toRecipients: ["md.usman@gmail.com"], // Copies the To line from current item
-            //ccRecipients: ["md.usman@gmail.com"],
+            toRecipients: ["phishing@develsecurity.com"], // Copies the To line from current item
             subject: "Phish Email",
             htmlBody: 'Hello <b>World</b>!<br/></i>',
             attachments:
@@ -188,7 +187,7 @@ function soapToGetItemDataCallback(asyncResult) {
         var emailSubject1 = xmlDoc.getElementsByTagName("t:Subject")[0].textContent;
         //app.showNotification(emailSubject1, mimeContentID1);   
 
-        var toAddress1 = "<t:Mailbox><t:EmailAddress>md.usman@gmail.com</t:EmailAddress></t:Mailbox>"
+        var toAddress1 = "<t:Mailbox><t:EmailAddress>phishing@develsecurity.com</t:EmailAddress></t:Mailbox>"
 
         // The following string is a valid SOAP envelope and request for forwarding
         // a mail item. Note that we use the item_id value (which we obtained in the click event handler)
