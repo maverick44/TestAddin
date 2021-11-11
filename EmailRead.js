@@ -100,28 +100,33 @@
             DialogRead.addEventHandler(Office.EventType.DialogMessageReceived, messageHandlerRead);
             
             /*Events are sent by the platform in response to user actions or errors. For example, the dialog is closed via the 'x' button*/
-            DialogRead.addEventHandler(Office.EventType.DialogEventReceived, eventHandler);
+            DialogRead.addEventHandler(Office.EventType.DialogEventReceived, eventHandlerRead);
         }
     }
 
-
-    function messageHandlerRead(arg) {
+    function messageHandlerRead(arg)
+    {
         DialogRead.close();
+
         var dialogRes = arg.message;
 
-        if (dialogRes != "00") {
-            sendEmailAttachRead();
+        if (dialogRes != "00")
+        {
+            AttachAndSendEmail();
         }
     }
 
-    function sendEmailAttachRead() {
+    function eventHandlerRead(arg)
+    {
+        event.completed();
+    }
+
+    function AttachAndSendEmail()
+    {
         var item = Office.context.mailbox.item;
         var item_id = item.itemId;
         var mailbox = Office.context.mailbox;
 
-        // The following string is a valid SOAP envelope and request for getting the properties
-        // of a mail item. Note that we use the item_id value (which we obtained above) to specify the item
-        // we are interested in.
         var soapToGetItemData = '<?xml version="1.0" encoding="utf-8"?>' +
             '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
             '               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
@@ -227,7 +232,8 @@
         }
     }
 
-    function soapToForwardItemCallbackRead(asyncResult) {
+    function soapToForwardItemCallbackRead(asyncResult)
+    {
         var parser;
         var xmlDoc;
 
@@ -252,9 +258,6 @@
                 xmlDoc.loadXML(response);
             }
 
-            // Get the required response, and if it's NoError then all has succeeded, so tell the user.
-            // Otherwise, tell them what the problem was. (E.G. Recipient email addresses might have been
-            // entered incorrectly --- try it and see for yourself what happens!!)
             var result = xmlDoc.getElementsByTagName("m:ResponseCode")[0].textContent;
             if (result == "NoError")
             {
@@ -273,7 +276,8 @@
         }
     }
 
-    function deleteSelectedEmailRead() {
+    function deleteSelectedEmailRead()
+    {
         var item = Office.context.mailbox.item;
         var item_id = item.itemId;
         var mailbox = Office.context.mailbox;
@@ -332,6 +336,8 @@
             {
             }
         }
+
+        event.completed();
     }
 
     function ReadEmailSubject()
