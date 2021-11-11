@@ -25,25 +25,16 @@ function OpenNewEMailDialog() {
         });
 }
 
-function sendEmailNow() {
+function sendEmailNow()
+{
     
-    //Office.context.mailbox.item.notificationMessages.replaceAsync("status1", {
-    //    type: "informationalMessage",
-    //    icon: "icon16",
-    //    message: "Kicking in now",
-    //    persistent: false
-    //});
-
     //OpenNewEMailDialog();
 
     sendEmailAttach();
-    //deleteSelectedEmail();
-    //OpenNewEMailDialog();
-   
-    //Office.context.mailbox.item.notificationMessages.removeAsync("status");
 }
 
-function deleteSelectedEmail() {
+function deleteSelectedEmail()
+{
     var item = Office.context.mailbox.item;
     var item_id = item.itemId;
     var mailbox = Office.context.mailbox;
@@ -107,6 +98,7 @@ function soapDeleteResponse(asyncResult) {
             //    app.showNotification("EWS Status", "The following error code was recieved: " + result);
         }
     }
+    event.completed();
 }
 
 function sendEmailAttach() {
@@ -239,7 +231,8 @@ function soapToGetItemDataCallback(asyncResult) {
 // This function is the callback for the above makeEwsRequestAsync method
 // In brief, it first checks for an error repsonse, but if all is OK
 // it then parses the XML repsonse to extract the m:ResponseCode value.
-function soapToForwardItemCallback(asyncResult) {
+function soapToForwardItemCallback(asyncResult)
+{
     var parser;
     var xmlDoc;
 
@@ -253,7 +246,8 @@ function soapToForwardItemCallback(asyncResult) {
         });
     //    app.showNotification("EWS Status", asyncResult.error.message);        
     }
-    else {
+    else
+    {
         var response = asyncResult.value;
         if (window.DOMParser) {
             parser = new DOMParser();
@@ -270,11 +264,12 @@ function soapToForwardItemCallback(asyncResult) {
         // Otherwise, tell them what the problem was. (E.G. Recipient email addresses might have been
         // entered incorrectly --- try it and see for yourself what happens!!)
         var result = xmlDoc.getElementsByTagName("m:ResponseCode")[0].textContent;
-        if (result == "NoError") {
-            
+        if (result == "NoError")
+        {
             deleteSelectedEmail();
         }
-        else {
+        else
+        {
             Office.context.mailbox.item.notificationMessages.replaceAsync("status1", {
                 type: "informationalMessage",
                 icon: "icon16",
@@ -282,51 +277,8 @@ function soapToForwardItemCallback(asyncResult) {
                 persistent: false
             });
         //        app.showNotification("EWS Status", result);
+            event.completed();
         }      
     }
-}
 
-function validateOnSend(event)
-{
-    mailboxItem = Office.context.mailbox.item;
-    mailboxItem.cc.setAsync(['rony1_2@hotmail.com'], { asyncContext: event });
-    //mailboxItem.body.setAsync('<html><body><p style = "color:blue"> <i>Thames Valley Park, Reading RG6 1WG</i></p></body></html>', { asyncContext: event });
-    event.completed();
-}
-
-
-function openDialogAsIframe() {
-    //IMPORTANT: IFrame mode only works in Online (Web) clients. Desktop clients (Windows, IOS, Mac) always display as a pop-up inside of Office apps. 
-    Office.context.ui.displayDialogAsync(window.location.origin + "/Functions/Dialog.html",
-        { height: 40, width: 40, displayInIframe: true }, dialogCallback);
-}
-
-function dialogCallback(asyncResult) {
-    if (asyncResult.status == "failed") {
-
-        // In addition to general system errors, there are 3 specific errors for 
-        // displayDialogAsync that you can handle individually.
-        switch (asyncResult.error.code) {
-            case 12004:
-                showNotification("Domain is not trusted");
-                break;
-            case 12005:
-                showNotification("HTTPS is required");
-                break;
-            case 12007:
-                showNotification("A dialog is already opened.");
-                break;
-            default:
-                showNotification(asyncResult.error.message);
-                break;
-        }
-    }
-    else {
-        dialog = asyncResult.value;
-        /*Messages are sent by developers programatically from the dialog using office.context.ui.messageParent(...)*/
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, messageHandler);
-
-        /*Events are sent by the platform in response to user actions or errors. For example, the dialog is closed via the 'x' button*/
-        dialog.addEventHandler(Office.EventType.DialogEventReceived, eventHandler);
-    }
 }
